@@ -1,4 +1,4 @@
-name: Create and publish MongoDB REST API Docker image
+name: 2. Create and publish MongoDB REST API Docker image
 
 on:
   push:
