@@ -24,10 +24,10 @@
   "homepage": "https://github.com/Informatievlaanderen/VSDS-LDES-E2E-mongodb-rest-api#readme",
   "dependencies": {
     "@types/minimist": "^1.2.2",
-    "@types/node": "^18.11.18",
-    "fastify": "^4.12.0",
-    "minimist": "^1.2.7",
-    "mongodb": "^5.0.0",
+    "@types/node": "^18.15.11",
+    "fastify": "^4.15.0",
+    "minimist": "^1.2.8",
+    "mongodb": "^5.2.0",
     "typescript": "^4.9.5"
   }
 }
