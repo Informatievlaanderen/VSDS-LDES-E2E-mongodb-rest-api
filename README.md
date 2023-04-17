@@ -35,5 +35,5 @@ The tool takes the following command line arguments:
 
 You can run the tool providing one or more optional arguments after building it, e.g.:
 ```bash
-node dist/index.js --silent true
+node dist/server.js --silent true
 ```

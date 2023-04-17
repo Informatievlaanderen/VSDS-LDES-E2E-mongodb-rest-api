@@ -28,8 +28,8 @@ server.addHook('onResponse', (request, reply, done) => {
   if (!silent) {
     const method = request.method;
     const statusCode = reply.statusCode;
-    console.debug(method === 'POST' 
-      ? `${method} ${request.url} ${request.headers['content-type']} ${statusCode}` 
+    console.debug(method === 'POST'
+      ? `${method} ${request.url} ${request.headers['content-type']} ${statusCode}`
       : `${method} ${request.url} ${statusCode}`);
   }
   done();
@@ -40,20 +40,38 @@ interface CountParameters {
   collection: string;
 }
 
+interface CountQueryParameters {
+  includeIds: boolean;
+  includeDocuments: boolean;
+}
+
 interface Record {
   _id: string; // required for MongoDB
 }
 
-server.get('/:database/:collection', { schema: { querystring: { includeIds: { type: 'string' } } } }, async (request, reply) => {
-  const queryString = (request.query as { includeIds: string });
-  const includeIds : boolean = (/true/i).test(queryString.includeIds);
+interface CountResponse {
+  count: number;
+  ids?: string[];
+  documents?: any[];
+}
+
+const queryStringParams = { type: 'object', properties: { includeIds: { type: 'boolean', default: false }, includeDocuments: { type: 'boolean', default: false } } };
+server.get('/:database/:collection', { schema: { querystring: queryStringParams } }, async (request, reply) => {
+  const queryString = request.query as CountQueryParameters;
   const parameters = request.params as CountParameters;
   const collection = mongo.db(parameters.database).collection(parameters.collection);
   const count = await collection.estimatedDocumentCount({});
-  const ids = includeIds 
-    ? await collection.find<Record>({}, {}).sort({ _id: 1 }).toArray().then(x => x.map(x => x._id))  // get all IDs sorted ascending
-    : undefined ;
-  reply.send(includeIds ? {count: count, ids: ids} : {count: count});
+  const response: CountResponse = { count: count };
+
+  if (queryString.includeIds) {
+    response.ids = await collection.find<Record>({}, {}).sort({ _id: 1 }).toArray().then(x => x.map(x => x._id));  // get all IDs sorted ascending
+  }
+
+  if (queryString.includeDocuments) {
+    response.documents = await collection.find<Record>({}, {}).sort({ _id: 1 }).toArray();
+  }
+
+  reply.send(response);
 });
 
 async function closeGracefully(signal: any) {
