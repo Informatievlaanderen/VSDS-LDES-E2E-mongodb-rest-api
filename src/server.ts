@@ -64,11 +64,11 @@ server.get('/:database/:collection', { schema: { querystring: queryStringParams 
   const response: CountResponse = { count: count };
 
   if (queryString.includeIds) {
-    response.ids = await collection.find<Record>({}, {}).sort({ _id: 1 }).toArray().then(x => x.map(x => x._id));  // get all IDs sorted ascending
+    response.ids = await collection.find<Record>({}, {}).toArray().then(x => x.map(x => x._id));  // get all IDs sorted ascending
   }
 
   if (queryString.includeDocuments) {
-    response.documents = await collection.find<Record>({}, {}).sort({ _id: 1 }).toArray();
+    response.documents = await collection.find<Record>({}, {}).toArray();
   }
 
   reply.send(response);
