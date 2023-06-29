@@ -1,6 +1,6 @@
 import fastify from 'fastify'
 import minimist from 'minimist'
-import { MongoClient } from "mongodb";
+import {MongoClient} from "mongodb";
 
 const server = fastify();
 
@@ -40,28 +40,30 @@ interface CountParameters {
   collection: string;
 }
 
-interface CountQueryParameters {
+interface QueryParameters {
   includeIds: boolean;
   includeDocuments: boolean;
+  includeIndices: boolean;
 }
 
 interface Record {
   _id: string; // required for MongoDB
 }
 
-interface CountResponse {
+interface Response {
   count: number;
   ids?: string[];
   documents?: any[];
+  indices?: string[];
 }
 
 const queryStringParams = { type: 'object', properties: { includeIds: { type: 'boolean', default: false }, includeDocuments: { type: 'boolean', default: false } } };
 server.get('/:database/:collection', { schema: { querystring: queryStringParams } }, async (request, reply) => {
-  const queryString = request.query as CountQueryParameters;
+  const queryString = request.query as QueryParameters;
   const parameters = request.params as CountParameters;
   const collection = mongo.db(parameters.database).collection(parameters.collection);
   const count = await collection.estimatedDocumentCount({});
-  const response: CountResponse = { count: count };
+  const response: Response = { count: count };
 
   if (queryString.includeIds) {
     response.ids = await collection.find<Record>({}, {}).toArray().then(x => x.map(x => x._id));  // get all IDs sorted ascending
@@ -69,6 +71,11 @@ server.get('/:database/:collection', { schema: { querystring: queryStringParams 
 
   if (queryString.includeDocuments) {
     response.documents = await collection.find<Record>({}, {}).toArray();
+  }
+
+  if (queryString.includeIndices) {
+    const indices = await mongo.db(parameters.database).indexInformation(parameters.collection);
+    response.indices = Object.keys(indices);
   }
 
   reply.send(response);
