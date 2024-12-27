@@ -23,11 +23,11 @@
   },
   "homepage": "https://github.com/Informatievlaanderen/VSDS-LDES-E2E-mongodb-rest-api#readme",
   "dependencies": {
-    "@types/minimist": "^1.2.2",
-    "@types/node": "^18.15.11",
-    "fastify": "^4.15.0",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^22.10.2",
+    "fastify": "^5.2.0",
     "minimist": "^1.2.8",
-    "mongodb": "^5.8.0",
-    "typescript": "^4.9.5"
+    "mongodb": "^6.12.0",
+    "typescript": "^5.7.2"
   }
 }
